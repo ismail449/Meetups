@@ -1,9 +1,9 @@
 
 const HomePage = ()=>{
   return (
-    <div>
-      <span>Home Page</span>
-    </div>
+    <>
+      <h1>Home Page</h1>
+    </>
   )
 };
 

@@ -5,6 +5,7 @@ const MeetupsDetails = ({image, desc, address, title}) => {
     <img src={image} alt={title} />
       <h1>{title}</h1>
       <address>{address}</address>
+      
       <p>{desc}</p>
     </section>
   );

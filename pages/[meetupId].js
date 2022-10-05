@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { MongoClient, ObjectId } from 'mongodb';
 import { connectionString } from '../mongoConnect';
 import MeetupsDetails from '../components/meetups/MeetupsDetails';
@@ -5,6 +6,10 @@ import MeetupsDetails from '../components/meetups/MeetupsDetails';
 const Details = ({ meetupData }) => {
   return (
     <>
+    <Head>
+      <title>{meetupData.title}</title>
+      <meta name='description' content={meetupData.desc} />
+    </Head>
       <MeetupsDetails
         address={meetupData.address}
         desc={meetupData.desc}

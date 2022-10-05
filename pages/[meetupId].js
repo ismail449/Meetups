@@ -1,8 +1,8 @@
-import { useRouter } from 'next/router';
+import { MongoClient, ObjectId } from 'mongodb';
+import { connectionString } from '../mongoConnect';
 import MeetupsDetails from '../components/meetups/MeetupsDetails';
 
 const Details = ({ meetupData }) => {
-  const router = useRouter();
   return (
     <>
       <MeetupsDetails
@@ -15,35 +15,38 @@ const Details = ({ meetupData }) => {
   );
 };
 export const getStaticPaths = async () => {
+  const client = await MongoClient.connect(connectionString)
+  const db = client.db()
+  const meetupsCollection = db.collection('meetups')
+  const meetups = await meetupsCollection.find({}, {_id:1}).toArray()
+  client.close()
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: 'm1',
-        },
+    paths: meetups.map(meetup=> ({
+      params: {
+        meetupId: meetup._id.toString(),
       },
-      {
-        params: {
-          meetupId: 'm2',
-        },
-      },
-    ],
+    }))
   };
 };
 
 export const getStaticProps = async (context) => {
+
   const meetupId = context.params.meetupId;
-  console.log(meetupId);
+  const client = await MongoClient.connect(connectionString)
+  const db = client.db()
+  const meetupsCollection = db.collection('meetups')
+  const meetup = await meetupsCollection.findOne({_id:ObjectId(meetupId)})
+  client.close()
+  console.log(meetup);
   return {
     props: {
       meetupData: {
-        address: '10003, new york, united states',
-        desc: 'The meetup description',
-        image:
-          'https://images.unsplash.com/photo-1617121346253-43ef95179ac9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80',
-        title: 'The first Meetup',
-        id: meetupId,
+        address: meetup.address,
+        desc: meetup.description,
+        image: meetup.image,
+        title: meetup.title,
+        id: meetup._id.toString(),
       },
     },
   };
